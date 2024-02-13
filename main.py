@@ -2,19 +2,25 @@ class GUIComponent:
     def display(self):
         pass
 
-class Panel(GUIComponent):
+class Panel(GUIComponent): #Class for panel and displaying with the generation of MS being Called
     def display(self, generation):
         return f"Panel {generation}"
 
-class Button(GUIComponent):
+class Button(GUIComponent): #Class for Button and displaying with the generation of MS being Called
     def display(self, generation):
         return f"Button {generation}"
 
-class Textbox(GUIComponent):
+class Textbox(GUIComponent): #Class for Textbox and displaying with the generation of MS being Called
     def display(self, generation):
         return f"Textbox {generation}"
 
-class GUIFactory:
+class GUIFactory: #Singleton pattern implemented here
+    Instance = None  
+    def get_instance():
+        if GUIFactory.Instance is None:
+            GUIFactory.Instance = GUIFactory()
+        return GUIFactory.Instance
+    #Constructors
     def create_panel(self):
         pass
 
@@ -25,7 +31,7 @@ class GUIFactory:
         pass
 
 
-class Word90Factory(GUIFactory):
+class Word90Factory(GUIFactory): #Factroy classes and their methods for MS 90
     def create_panel(self):
         return Panel()
 
@@ -36,7 +42,7 @@ class Word90Factory(GUIFactory):
         return Textbox()
 
 
-class Word00Factory(GUIFactory):
+class Word00Factory(GUIFactory): #Factroy classes and their methods for MS 00
     def create_panel(self):
         return Panel()
 
@@ -47,7 +53,7 @@ class Word00Factory(GUIFactory):
         return Textbox()
 
 
-class Word10Factory(GUIFactory):
+class Word10Factory(GUIFactory): #Factroy classes and their methods for MS 10
     def create_panel(self):
         return Panel()
 
@@ -58,7 +64,7 @@ class Word10Factory(GUIFactory):
         return Textbox()
 
 
-class Word24Factory(GUIFactory):
+class Word24Factory(GUIFactory): #Factroy classes and their methods for MS 24
     def create_panel(self):
         return Panel()
 
@@ -68,20 +74,23 @@ class Word24Factory(GUIFactory):
     def create_textbox(self):
         return Textbox()
 
-class WordTest:
+class WordTest: #Client side logic
     def __init__(self, config_file):
         self.config_file = config_file
 
     def run_tests(self):
         generations = []
-        factory_counts = {}
+        factory_counts = {} #Counter for numnber of times factory is being called
         with open(self.config_file, 'r') as file:
             while True:
                 line = file.readline().strip()
                 if not line:
                     break
+
                 generation = line
                 generations.append(generation)
+                factory = None
+
                 if generation == "Word90":
                     factory = Word90Factory()
                 elif generation == "Word00":
@@ -91,14 +100,14 @@ class WordTest:
                 elif generation == "Word24":
                     factory = Word24Factory()
                 else:
-                    print(f"No factory defined for {generation}")
+                    print(f"Factory does not exist for {generation}")
                     continue
 
-                factory_counts[generation] = factory_counts.get(generation, 0) + 1
+                factory_counts[generation] = factory_counts.get(generation, 0) + 1 
 
-                if factory_counts[generation] >= 3:
+                if factory_counts[generation] >= 3:  #Gives warning if a factory is called more than 2 times
                     print(f"Warning: {generation} tested more than twice!")
-                else:
+                else: #Instantiation of methods and printing them using display method
                     panel = factory.create_panel()
                     button = factory.create_button()
                     textbox = factory.create_textbox()
